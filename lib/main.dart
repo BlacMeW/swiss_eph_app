@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -40,14 +41,15 @@ void main() async {
     'packages/sweph/assets/ephe/seasnam.txt', // For asteriods
   ]);
 
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
+
   runApp(
     MultiBlocProvider(
       providers: [
-        // BlocProvider(create: (context) => AstroBloc()),
         BlocProvider(create: (context) => AstroCalculationBloc()),
-        // BlocProvider(create: (context) => AuthenticationBloc(userRepository)),
-        // BlocProvider(create: (context) => ApitestBloc(userRepository)),
-        // BlocProvider(create: (context) => SettingsBloc(userRepository)),
       ],
       child: MyApp(
           // timeToLoad: stopwatch.elapsed,
