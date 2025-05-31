@@ -113,7 +113,10 @@ class _PanelScreenState extends State<PanelScreen> {
         // ),
         Expanded(
           flex: 1,
-          child: Align(alignment: Alignment.center, child: HoroscopeView()),
+          child: Align(
+            alignment: Alignment.center,
+            child: HoroscopeView()
+            ),
           // child: HoroscopeChartApp(),
           // child: BirthChartPreview(),
         ),

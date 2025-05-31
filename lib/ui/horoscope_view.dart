@@ -3,10 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sweph/sweph.dart';
+
 // import 'package:swiss_eph/lib/birth_chart_preview.dart';
 
 import '../bloc_lib/calculation/astrocalculation_bloc.dart';
-// import '../lib/flutter-birth-chart/src/chart/chart_data.dart';
+import 'birthchart/eastern_chart_painter.dart';
 
 class HoroscopeView extends StatefulWidget {
   const HoroscopeView({super.key});
@@ -15,8 +16,7 @@ class HoroscopeView extends StatefulWidget {
   State<HoroscopeView> createState() => _HoroscopeViewState();
 }
 
-class _HoroscopeViewState extends State<HoroscopeView>
-    with SingleTickerProviderStateMixin {
+class _HoroscopeViewState extends State<HoroscopeView> with SingleTickerProviderStateMixin {
   // late var planets = <ChartPlanet>[];
   late var houses = <ChartHouse>[];
   double juliDate = 0.0;
@@ -31,7 +31,7 @@ class _HoroscopeViewState extends State<HoroscopeView>
   void initState() {
     super.initState();
     houseCuspData = HouseCuspData([], []);
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this); // Changed from 3 to 4
   }
 
   @override
@@ -48,8 +48,8 @@ class _HoroscopeViewState extends State<HoroscopeView>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: "Horoscope"),
-            // Tab(text: "Horoscope2"),
+            Tab(text: "Western"),
+            Tab(text: "Eastern"),
             Tab(text: "Planets"),
             Tab(text: "Houses"),
           ],
@@ -58,6 +58,7 @@ class _HoroscopeViewState extends State<HoroscopeView>
       body: TabBarView(
         controller: _tabController,
         children: [
+          // First tab - Western Chart
           BlocConsumer<AstroCalculationBloc, AstroCalculationState>(
             listener: (context, state) {
               if (state is CompleteCalculation) {
@@ -73,43 +74,51 @@ class _HoroscopeViewState extends State<HoroscopeView>
               double asc = 0.0;
               if (houseCuspData.ascmc.isNotEmpty) {
                 asc = houseCuspData.ascmc[0];
-                // debugPrint("asc: $asc");
               }
               return Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.35,
+                  height: MediaQuery.of(context).size.width * 0.35,
                   child: HoroscopeCreator(
-                planets: planets,
-                startRasi: 0.0,
-                startHouse: asc,
-              ));
-              // return Center(child: BirthChartPreview());
+                    planets: planets,
+                    startRasi: 0.0,
+                    startHouse: asc,
+                  ),
+                ),
+              );
             },
           ),
-          // BlocConsumer<AstroCalculationBloc, AstroCalculationState>(
-          //   listener: (context, state) {
-          //     if (state is CompleteCalculation) {
-          //       setState(() {
-          //         planets = state.planetsPosition;
-          //         juliDate = state.julianDate;
-          //         houseCuspData = state.houseCuspData;
-          //         houses = state.houses;
-          //       });
-          //     }
-          //   },
-          //   builder: (context, state) {
-          //     double asc = 0.0;
-          //     if (houseCuspData.ascmc.isNotEmpty) {
-          //       asc = houseCuspData.ascmc[0];
-          //       // debugPrint("asc: $asc");
-          //     }
-          //     // return Center(
-          //     //     child: HoroscopeCreator(
-          //     //   planets: planets,
-          //     //   startRasi: 0.0,
-          //     //   startHouse: asc,
-          //     // ));
-          //     return Center(child: BirthChartPreview());
-          //   },
-          // ),
+          // Second tab - Eastern Chart
+          BlocConsumer<AstroCalculationBloc, AstroCalculationState>(
+            listener: (context, state) {
+              if (state is CompleteCalculation) {
+                setState(() {
+                  planets = state.planetsPosition;
+                  juliDate = state.julianDate;
+                  houseCuspData = state.houseCuspData;
+                  houses = state.houses;
+                });
+              }
+            },
+            builder: (context, state) {
+              double asc = 0.0;
+              if (houseCuspData.ascmc.isNotEmpty) {
+                asc = houseCuspData.ascmc[0];
+              }
+              return Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.8,
+                  height: MediaQuery.of(context).size.width * 0.8,
+                  child: EasternBirthChartCreator(
+                    planets: planets,
+                    startRasi: 0.0,
+                    startHouse: asc,
+                  ),
+                ),
+              );
+            },
+          ),
+          // Existing Planets tab
           BlocConsumer<AstroCalculationBloc, AstroCalculationState>(
             listener: (context, state) {
               if (state is CompleteCalculation) {
@@ -125,6 +134,7 @@ class _HoroscopeViewState extends State<HoroscopeView>
               return _buildPlanetDataTable();
             },
           ),
+          // Existing Houses tab
           BlocConsumer<AstroCalculationBloc, AstroCalculationState>(
             listener: (context, state) {
               if (state is CompleteCalculation) {
@@ -140,19 +150,19 @@ class _HoroscopeViewState extends State<HoroscopeView>
               return _buildHouseDataTable();
             },
           ),
-          // Second tab content
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed, // Add this to show all items
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_rounded),
-            label: 'Horoscope',
+            icon: Icon(Icons.circle_outlined),
+            label: 'Western',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.chat_bubble_rounded),
-          //   label: 'Horoscope 2',
-          // ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.square_outlined),
+            label: 'Eastern',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.calculate),
             label: 'Planets',
@@ -181,32 +191,24 @@ class _HoroscopeViewState extends State<HoroscopeView>
           columnSpacing: 20, // Add spacing between columns
           columns: const [
             DataColumn(
-                label: Text("Planet",
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                label: Text("Planet", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
             DataColumn(
-                label: Text("Longitude",
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                label:
+                    Text("Longitude", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
             DataColumn(
-                label: Text("Latitude",
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                label:
+                    Text("Latitude", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
             DataColumn(
-                label: Text("Speed",
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                label: Text("Speed", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
           ],
           rows: planets.entries.map((planet) {
             return DataRow(
               cells: [
-                DataCell(Text(planet.key,
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
-                DataCell(Text(convertToDMS(planet.value.longitude),
-                    style: TextStyle(fontSize: 14))),
-                DataCell(Text(convertToDMS(planet.value.latitude),
-                    style: TextStyle(fontSize: 14))),
+                DataCell(
+                    Text(planet.key, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+                DataCell(
+                    Text(convertToDMS(planet.value.longitude), style: TextStyle(fontSize: 14))),
+                DataCell(Text(convertToDMS(planet.value.latitude), style: TextStyle(fontSize: 14))),
                 DataCell(Text(convertToDMS(planet.value.speedInLongitude),
                     style: TextStyle(fontSize: 14))),
               ],
@@ -223,11 +225,9 @@ class _HoroscopeViewState extends State<HoroscopeView>
       child: DataTable(
         columns: const [
           DataColumn(
-              label: Text("House",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+              label: Text("House", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
           DataColumn(
-              label: Text("Position",
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
+              label: Text("Position", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold))),
         ],
         rows: houses.asMap().entries.map((entry) {
           int houseNumber = entry.key + 1;
@@ -260,32 +260,23 @@ class HoroscopeCreator extends StatelessWidget {
   double startRasi = 270.0;
   double startHouse = 270.0;
   HoroscopeCreator(
-      {super.key,
-      required this.planets,
-      required this.startRasi,
-      required this.startHouse});
+      {super.key, required this.planets, required this.startRasi, required this.startHouse});
 
   @override
   Widget build(BuildContext context) {
-    double screenSizeWidth = MediaQuery.of(context).size.width * 0.35;
-    double screenSizeHeight = MediaQuery.of(context).size.height * 0.35;
-    return Align(
-      alignment: Alignment.center,
-      child: CustomPaint(
-        size: Size(screenSizeWidth, screenSizeHeight),
-        // painter: HoroscopePainter(planets: planets),
-        painter: BirthChartPainter(
-            planets: planets,
-            startDegRasi: startRasi,
-            startDegHouse: startHouse),
+    return CustomPaint(
+      size: Size.square(MediaQuery.of(context).size.width * 0.45),
+      painter: BirthChartPainter(
+        planets: planets,
+        startDegRasi: startRasi,
+        startDegHouse: startHouse,
       ),
     );
   }
 }
 
 class BirthChartPainter extends CustomPainter {
-  final Map<String, CoordinatesWithSpeed>
-      planets; // Planet positions in degrees
+  final Map<String, CoordinatesWithSpeed> planets; // Planet positions in degrees
 
   List<Color> planetColor = [
     Colors.yellow,
@@ -305,9 +296,7 @@ class BirthChartPainter extends CustomPainter {
   double startDegRasi = 270.0;
   double startDegHouse = 270.0;
   BirthChartPainter(
-      {required this.planets,
-      required this.startDegRasi,
-      required this.startDegHouse});
+      {required this.planets, required this.startDegRasi, required this.startDegHouse});
 
   void resize(Size size) {
     if (startDegRasi > 360) {
@@ -371,8 +360,7 @@ class BirthChartPainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = 0.6;
     for (int i = 0; i < 12; i++) {
-      final angle =
-          ((sDeg - i * 30) % 360) * pi / 180; // Adjusting for 0° Aries at Top
+      final angle = ((sDeg - i * 30) % 360) * pi / 180; // Adjusting for 0° Aries at Top
       // debugPrint("$i = angle $angle");
       final start = Offset(
         center.dx + radius * cos(angle),
@@ -382,8 +370,7 @@ class BirthChartPainter extends CustomPainter {
     }
   }
 
-  void drawHouseLine(
-      Canvas canvas, Size size, Color lineColor, double startDegHouse) {
+  void drawHouseLine(Canvas canvas, Size size, Color lineColor, double startDegHouse) {
     double houseDeg = 270.0 - startDegHouse;
     if (houseDeg > 360) {
       houseDeg -= 360;
@@ -395,20 +382,16 @@ class BirthChartPainter extends CustomPainter {
       ..strokeWidth = 1;
 
     for (int i = 0; i < 12; i++) {
-      final angle = ((houseDeg - i * 30) % 360) *
-          pi /
-          180; // Adjusting for 0° Aries at Top
+      final angle = ((houseDeg - i * 30) % 360) * pi / 180; // Adjusting for 0° Aries at Top
       final start = Offset(
         center.dx + radius * cos(angle),
         center.dy + radius * sin(angle),
       );
 
-      drawDashedLine(canvas, paintDivision, start, center,
-          dashLength: 5, gapLength: 3);
+      drawDashedLine(canvas, paintDivision, start, center, dashLength: 5, gapLength: 3);
 
       // Calculate text position
-      final midAngle =
-          ((houseDeg - (i * 30) - 15) % 360) * pi / 180; // Midpoint of house
+      final midAngle = ((houseDeg - (i * 30) - 15) % 360) * pi / 180; // Midpoint of house
       final textOffset = Offset(
         center.dx + (radius * 0.85) * cos(midAngle),
         center.dy + (radius * 0.85) * sin(midAngle),
@@ -434,13 +417,12 @@ class BirthChartPainter extends CustomPainter {
     textPainter.layout();
     textPainter.paint(
       canvas,
-      Offset(position.dx - (textPainter.width / 2),
-          position.dy - (textPainter.height / 2)),
+      Offset(position.dx - (textPainter.width / 2), position.dy - (textPainter.height / 2)),
     );
   }
 
-  void drawPlanet(Canvas canvas, Size size,
-      Map<String, CoordinatesWithSpeed> dplanets, double startDeg) {
+  void drawPlanet(
+      Canvas canvas, Size size, Map<String, CoordinatesWithSpeed> dplanets, double startDeg) {
     int planetIndex = 0;
     double sDeg = startDeg + 270.0;
     if (sDeg > 360) {
@@ -449,9 +431,8 @@ class BirthChartPainter extends CustomPainter {
     // Draw Planets (0° Aries at Top, Anticlockwise)
     for (var planet in dplanets.entries) {
       planetIndex++;
-      final angle = ((sDeg - planet.value.longitude) % 360) *
-          pi /
-          180; // Adjusting for 0° Aries at Top
+      final angle =
+          ((sDeg - planet.value.longitude) % 360) * pi / 180; // Adjusting for 0° Aries at Top
       final planetOffset = Offset(
         center.dx + (radius * 0.7) * cos(angle),
         center.dy + (radius * 0.7) * sin(angle),
@@ -472,14 +453,13 @@ class BirthChartPainter extends CustomPainter {
       textPainter.layout();
       textPainter.paint(
         canvas,
-        Offset(planetOffset.dx - (textPainter.width / 2),
-            planetOffset.dy - (textPainter.height / 2)),
+        Offset(
+            planetOffset.dx - (textPainter.width / 2), planetOffset.dy - (textPainter.height / 2)),
       );
     }
   }
 
-  void drawDeg(
-      Canvas canvas, Size size, Color lineColor, int byDeg, double startDeg) {
+  void drawDeg(Canvas canvas, Size size, Color lineColor, int byDeg, double startDeg) {
     // Zodiac Sign Divisions (0° Aries at Top, Anticlockwise)
     double sDeg = startDeg + 270.0;
     if (sDeg > 360) {
@@ -516,11 +496,9 @@ class BirthChartPainter extends CustomPainter {
 
     Offset currentPoint = start;
     for (int i = 0; i < dashCount; i++) {
-      final Offset nextPoint =
-          Offset(currentPoint.dx + dashDx, currentPoint.dy + dashDy);
+      final Offset nextPoint = Offset(currentPoint.dx + dashDx, currentPoint.dy + dashDy);
       canvas.drawLine(currentPoint, nextPoint, paint);
-      currentPoint = Offset(
-          currentPoint.dx + dashDx + gapDx, currentPoint.dy + dashDy + gapDy);
+      currentPoint = Offset(currentPoint.dx + dashDx + gapDx, currentPoint.dy + dashDy + gapDy);
     }
   }
 
