@@ -123,25 +123,25 @@ class EasternBirthChartPainter extends CustomPainter {
 
     // House positions mapping
     final housePositions = {
-      1: Offset(cellSize * 1.5, cellSize * 0.5), // Top center
-      2: Offset(cellSize * 0.75, cellSize * 0.5), // Top left diagonal
-      3: Offset(cellSize * 0.5, cellSize *0.7), // Left center
-      4: Offset(cellSize * 0.5, cellSize * 1.5), // Bottom left
-      5: Offset(cellSize * 0.5, cellSize * 2.3), // Bottom center
-      6: Offset(cellSize * 0.75, cellSize * 2.5), // Bottom left diagonal
-      7: Offset(cellSize * 1.5, cellSize * 2.5), // Center - Jupiter
-      8: Offset(cellSize * 2.25, cellSize * 2.5), // Bottom right diagonal
-      9: Offset(cellSize * 2.3, cellSize * 2.2), // Bottom right
-      10: Offset(cellSize * 2.5, cellSize * 1.5), // Right center
-      11: Offset(cellSize * 2.25, cellSize * 0.9), // Top right diagonal
-      12: Offset(cellSize * 2.25, cellSize * 0.5), // Top right
+      1: Offset(cellSize * 1.5, cellSize * 0.03), // Top center
+      2: Offset(cellSize * 0.75, cellSize * 0.03), // Top left diagonal
+      3: Offset(cellSize * 0.15, cellSize *0.25), // Left center
+      4: Offset(cellSize * 0.5, cellSize * 1.0), // Bottom left
+      5: Offset(cellSize * 0.15, cellSize * 2.0), // Bottom center
+      6: Offset(cellSize * 0.8, cellSize * 2.3), // Bottom left diagonal
+      7: Offset(cellSize * 1.5, cellSize * 2.0), // Center - Jupiter
+      8: Offset(cellSize * 2.15, cellSize * 2.25), // Bottom right diagonal
+      9: Offset(cellSize * 2.8, cellSize * 2.0), // Bottom right
+      10: Offset(cellSize * 2.5, cellSize * 1.0), // Right center
+      11: Offset(cellSize * 2.8, cellSize * 0.3), // Top right diagonal
+      12: Offset(cellSize * 2.2, cellSize * 0.03), // Top right
     };
 
     // Draw house numbers
-    for (int i = 1; i <= 12; i++) {
-      final position = housePositions[i]!;
-      _drawText(canvas, i.toString(), position.translate(0, -10), Colors.black87, 14);
-    }
+    // for (int i = 1; i <= 12; i++) {
+    //   final position = housePositions[i]!;
+    //   _drawText(canvas, i.toString(), position.translate(0, -10), Colors.black87, 14);
+    // }
 
     // Draw planets in their calculated houses
     houseContents.forEach((house, planetList) {
@@ -153,7 +153,7 @@ class EasternBirthChartPainter extends CustomPainter {
         String planetText = '$planet ${longitude.toStringAsFixed(0)}°';
 
         _drawText(canvas, planetText, position.translate(0, yOffset),
-            planetColors[planet] ?? Colors.black87, 12);
+            planetColors[planet] ?? Colors.black87, 13);
         yOffset += 16;
       }
     });
