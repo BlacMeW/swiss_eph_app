@@ -114,7 +114,7 @@ class EasternBirthChartPainter extends CustomPainter {
     Map<int, List<String>> houseContents = {};
 
     final ASC = houseCuspData.ascmc[0]; // Ascendant in degrees
-    final MC=houseCuspData.ascmc[3]; // Midheaven in degrees
+    final MC=houseCuspData.cusps[9]; // Midheaven in degrees
     // Calculate house positions for planets
     for (var entry in planets.entries) {
       // Convert to house position (1-12)
@@ -176,7 +176,7 @@ class EasternBirthChartPainter extends CustomPainter {
           longitude = houseCuspData.ascmc[0].toDouble(); // Ascendant
         }
         if (planet == "M") {
-          longitude = houseCuspData.ascmc[3].toDouble(); // Midheaven
+          longitude = houseCuspData.cusps[9].toDouble(); // Midheaven
         }
         String planetText = '$planet ${longitude.toStringAsFixed(0)}°';
 
