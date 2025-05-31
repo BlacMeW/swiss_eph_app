@@ -187,14 +187,6 @@ class EasternBirthChartPainter extends CustomPainter {
     });
   }
 
-  Offset _getCellCenter(int index, double cellSize) {
-    int row = index ~/ 3;
-    int col = index % 3;
-    return Offset(
-      cellSize * (col + 0.5),
-      cellSize * (row + 0.5),
-    );
-  }
 
   void _drawText(Canvas canvas, String text, Offset position, Color color, double fontSize) {
     final textPainter = TextPainter(
