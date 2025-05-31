@@ -171,12 +171,12 @@ class EasternBirthChartPainter extends CustomPainter {
       double yOffset = 15;
 
       for (String planet in planetList) {
-        double longitude = planets[planet]?.longitude ?? 0.0;
+        double longitude = (planets[planet]?.longitude ?? 0.0) % 30.0;
         if (planet == "A") {
-          longitude = houseCuspData.ascmc[0].toDouble(); // Ascendant
+          longitude = houseCuspData.ascmc[0].toDouble()% 30.0; // Ascendant
         }
         if (planet == "M") {
-          longitude = houseCuspData.cusps[9].toDouble(); // Midheaven
+          longitude = houseCuspData.cusps[9].toDouble()% 30.0; // Midheaven
         }
         String planetText = '$planet ${longitude.toStringAsFixed(0)}°';
 
