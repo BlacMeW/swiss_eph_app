@@ -6,12 +6,13 @@ class EasternBirthChartCreator extends StatelessWidget {
   final Map<String, CoordinatesWithSpeed> planets;
   double startRasi = 270.0;
   double startHouse = 270.0;
+  HouseCuspData houseCuspData;
   EasternBirthChartCreator(
-      {super.key, required this.planets, required this.startRasi, required this.startHouse});
+      {super.key, required this.planets, required this.startRasi, required this.startHouse,required this.houseCuspData});
 
   @override
   Widget build(BuildContext context) {
-    // Adjust to 80% of the smaller screen dimension
+    // Adjust to 80% of the smaller screen di mension
     double minDimension = MediaQuery.of(context).size.shortestSide * 0.8;
     return Align(
       alignment: Alignment.center,
@@ -21,6 +22,7 @@ class EasternBirthChartCreator extends StatelessWidget {
           planets: planets,
           startDegRasi: startRasi,
           startDegHouse: startHouse,
+          houseCuspData: houseCuspData,
         ),
       ),
     );
@@ -31,6 +33,7 @@ class EasternBirthChartPainter extends CustomPainter {
   final Map<String, CoordinatesWithSpeed> planets;
   final double startDegRasi;
   final double startDegHouse;
+  final HouseCuspData houseCuspData;
 
   // House positions in Indian astrology (starting from 1st house)
   final List<int> houseOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -51,6 +54,7 @@ class EasternBirthChartPainter extends CustomPainter {
     required this.planets,
     required this.startDegRasi,
     required this.startDegHouse,
+    required this.houseCuspData,
   });
 
   @override
@@ -109,25 +113,43 @@ class EasternBirthChartPainter extends CustomPainter {
   void _drawHousesAndPlanets(Canvas canvas, double size, double cellSize) {
     Map<int, List<String>> houseContents = {};
 
+    final ASC = houseCuspData.ascmc[0]; // Ascendant in degrees
+    final MC=houseCuspData.ascmc[3]; // Midheaven in degrees
     // Calculate house positions for planets
     for (var entry in planets.entries) {
       // Convert to house position (1-12)
       double longitude = entry.value.longitude;
-      double housePos = ((longitude - startDegHouse) / 30.0);
+      // double housePos = ((longitude - startDegHouse) / 30.0);
+      double housePos = ((longitude) / 30.0);
       if (housePos < 0) housePos += 12;
       int house = (housePos.floor() % 12) + 1;
 
       // Add planet to house contents
       houseContents.putIfAbsent(house, () => []).add(entry.key);
     }
+    double longitude = ASC.toDouble();
+
+    double housePos = ((longitude - 0.0) / 30.0);
+    if (housePos < 0) housePos += 12;
+    int house = (housePos.floor() % 12) + 1;
+
+    // Add planet to house contents
+    houseContents.putIfAbsent(house, () => []).add("A");
+
+    longitude = MC.toDouble();
+    housePos = ((longitude - 0.0) / 30.0);
+    if (housePos < 0) housePos += 12;
+    house = (housePos.floor() % 12) + 1;
+    // Add planet to house contents
+    houseContents.putIfAbsent(house, () => []).add("M");
 
     // House positions mapping
     final housePositions = {
       1: Offset(cellSize * 1.5, cellSize * 0.03), // Top center
       2: Offset(cellSize * 0.75, cellSize * 0.03), // Top left diagonal
-      3: Offset(cellSize * 0.15, cellSize *0.25), // Left center
+      3: Offset(cellSize * 0.15, cellSize * 0.25), // Left center
       4: Offset(cellSize * 0.5, cellSize * 1.0), // Bottom left
-      5: Offset(cellSize * 0.15, cellSize * 2.0), // Bottom center
+      5: Offset(cellSize * 0.20, cellSize * 2.0), // Bottom center
       6: Offset(cellSize * 0.8, cellSize * 2.3), // Bottom left diagonal
       7: Offset(cellSize * 1.5, cellSize * 2.0), // Center - Jupiter
       8: Offset(cellSize * 2.15, cellSize * 2.25), // Bottom right diagonal
@@ -150,6 +172,12 @@ class EasternBirthChartPainter extends CustomPainter {
 
       for (String planet in planetList) {
         double longitude = planets[planet]?.longitude ?? 0.0;
+        if (planet == "A") {
+          longitude = houseCuspData.ascmc[0].toDouble(); // Ascendant
+        }
+        if (planet == "M") {
+          longitude = houseCuspData.ascmc[3].toDouble(); // Midheaven
+        }
         String planetText = '$planet ${longitude.toStringAsFixed(0)}°';
 
         _drawText(canvas, planetText, position.translate(0, yOffset),

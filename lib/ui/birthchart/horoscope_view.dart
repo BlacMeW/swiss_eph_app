@@ -113,7 +113,8 @@ class _HoroscopeViewState extends State<HoroscopeView> with SingleTickerProvider
                     planets: planets,
                     startRasi: 0.0,
                     // startHouse: asc,
-                    startHouse: 0.0,
+                    startHouse:houseCuspData.ascmc[0],
+                    houseCuspData: houseCuspData,
                   ),
                 ),
               );
