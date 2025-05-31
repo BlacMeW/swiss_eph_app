@@ -196,9 +196,16 @@ class EasternBirthChartPainter extends CustomPainter {
       double yOffset = 20;
 
       for (String planet in planetList) {
-        String planetText = '$planet ${planets[planet]?.longitude.toStringAsFixed(0)}°';
-        _drawText(canvas, planetText, position.translate(0, yOffset),
-            planetColors[planet] ?? Colors.black87, 12);
+        // Get planet position or use 0 as default if null
+        double longitude = planets[planet]?.longitude ?? 0.0;
+        String planetText = '$planet ${longitude.toStringAsFixed(0)}°';
+        _drawText(
+          canvas, 
+          planetText, 
+          position.translate(0, yOffset),
+          planetColors[planet] ?? Colors.black87, 
+          12
+        );
         yOffset += 16;
       }
     });
