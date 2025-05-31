@@ -109,7 +109,19 @@ class EasternBirthChartPainter extends CustomPainter {
   void _drawHousesAndPlanets(Canvas canvas, double size, double cellSize) {
     Map<int, List<String>> houseContents = {};
 
-    // Updated house positions to match the reference image
+    // Calculate house positions for planets
+    for (var entry in planets.entries) {
+      // Convert to house position (1-12)
+      double longitude = entry.value.longitude;
+      double housePos = ((longitude - startDegHouse) / 30.0);
+      if (housePos < 0) housePos += 12;
+      int house = (housePos.floor() % 12) + 1;
+
+      // Add planet to house contents
+      houseContents.putIfAbsent(house, () => []).add(entry.key);
+    }
+
+    // House positions mapping
     final housePositions = {
       1: Offset(cellSize * 1.5, cellSize * 0.5), // Top center
       2: Offset(cellSize * 0.75, cellSize * 0.5), // Top left diagonal
@@ -125,87 +137,23 @@ class EasternBirthChartPainter extends CustomPainter {
       12: Offset(cellSize * 2.25, cellSize * 0.5), // Top right
     };
 
-    // Draw house numbers with adjusted positioning
+    // Draw house numbers
     for (int i = 1; i <= 12; i++) {
       final position = housePositions[i]!;
-      double xOffset = 0;
-      double yOffset = 0;
-
-      // Position adjustments based on reference image
-      switch (i) {
-        case 1:
-          yOffset = -10;
-          break;
-        case 2:
-          xOffset = -10;
-          yOffset = -5;
-          break;
-        case 3:
-          xOffset = -15;
-          break;
-        case 4:
-          xOffset = -15;
-          yOffset = 10;
-          break;
-        case 5:
-          yOffset = 15;
-          break;
-        case 6:
-          xOffset = -10;
-          yOffset = 10;
-          break;
-        case 7:
-          // Center position for Jupiter
-          break;
-        case 8:
-          xOffset = 10;
-          yOffset = 10;
-          break;
-        case 9:
-          xOffset = 15;
-          yOffset = 10;
-          break;
-        case 10:
-          xOffset = 15;
-          break;
-        case 11:
-          xOffset = 10;
-          yOffset = -5;
-          break;
-        case 12:
-          xOffset = 10;
-          yOffset = -10;
-          break;
-      }
-
-      _drawText(canvas, i.toString(), position.translate(xOffset, yOffset), Colors.black87, 14);
+      _drawText(canvas, i.toString(), position.translate(0, -10), Colors.black87, 14);
     }
 
-    // Calculate and draw planets with positions matching reference image
-    Map<int, List<String>> fixedPlanetPositions = {
-      1: ['Su', 'Ve'], // Sun and Venus in house 1
-      2: ['Mo', 'Ke'], // Moon and Ketu in house 2
-      7: ['Ju'], // Jupiter in house 7
-      8: ['Ra'], // Rahu in house 8
-      11: ['Ma', 'Sa'], // Mars and Saturn in house 11
-    };
-
-    // Draw planets with correct positioning
-    fixedPlanetPositions.forEach((house, planetList) {
+    // Draw planets in their calculated houses
+    houseContents.forEach((house, planetList) {
       final position = housePositions[house]!;
-      double yOffset = 20;
+      double yOffset = 15;
 
       for (String planet in planetList) {
-        // Get planet position or use 0 as default if null
         double longitude = planets[planet]?.longitude ?? 0.0;
         String planetText = '$planet ${longitude.toStringAsFixed(0)}°';
-        _drawText(
-          canvas, 
-          planetText, 
-          position.translate(0, yOffset),
-          planetColors[planet] ?? Colors.black87, 
-          12
-        );
+
+        _drawText(canvas, planetText, position.translate(0, yOffset),
+            planetColors[planet] ?? Colors.black87, 12);
         yOffset += 16;
       }
     });

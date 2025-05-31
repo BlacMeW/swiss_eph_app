@@ -112,7 +112,8 @@ class _HoroscopeViewState extends State<HoroscopeView> with SingleTickerProvider
                   child: EasternBirthChartCreator(
                     planets: planets,
                     startRasi: 0.0,
-                    startHouse: asc,
+                    // startHouse: asc,
+                    startHouse: 0.0,
                   ),
                 ),
               );
