@@ -6,8 +6,8 @@ import 'package:sweph/sweph.dart';
 
 // import 'package:swiss_eph/lib/birth_chart_preview.dart';
 
-import '../bloc_lib/calculation/astrocalculation_bloc.dart';
-import 'birthchart/eastern_chart_painter.dart';
+import '../../bloc_lib/calculation/astrocalculation_bloc.dart';
+import 'eastern_chart_painter.dart';
 
 class HoroscopeView extends StatefulWidget {
   const HoroscopeView({super.key});

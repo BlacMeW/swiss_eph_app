@@ -5,7 +5,7 @@ import 'package:sweph/sweph.dart';
 // import 'package:swiss_eph/lib/flutter-birth-chart/src/chart/chart_data.dart';
 import '../bloc_lib/calculation/astrocalculation_bloc.dart';
 import 'birthchart/entry_form.dart';
-import 'horoscope_view.dart';
+import 'birthchart/horoscope_view.dart';
 // Import your SwissLib class
 
 class PanelScreen extends StatefulWidget {
